@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap" rel="stylesheet">
 
-  <style>
+<style>
     /* ╔══════════════════════════════════════════════╗
        ║  DESIGN TOKENS                               ║
        ╚══════════════════════════════════════════════╝ */
@@ -36,10 +36,9 @@
     html { -webkit-text-size-adjust: 100%; }
 
     html, body {
-      min-height: 100%;
-      min-height: 100dvh;
-      overflow-x: hidden;
-      overflow-y: auto;             /* sin scroll vertical en móvil */
+      height: 100%;
+      height: 100svh;                 /* Usamos SVH para esquivar la barra de Safari */
+      overflow: hidden;               /* Bloqueo total de scroll */
     }
 
     body {
@@ -54,11 +53,10 @@
     .page {
       width: 100%;
       max-width: 460px;
-      min-height: 100dvh;
-      height: 100dvh;
+      height: 100svh;                 /* SVH en lugar de DVH */
       display: flex;
       flex-direction: column;
-      justify-content: space-between;  /* empuja header arriba y footer abajo */
+      justify-content: space-between;
       overflow: hidden;
     }
 
@@ -68,7 +66,7 @@
     .hero {
       position: relative;
       flex: 0 0 auto;
-      min-height: clamp(75px, 18dvh, 168px);
+      min-height: clamp(75px, 18svh, 168px);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -79,7 +77,6 @@
       text-align: center;
     }
 
-    /* Filete dorado superior */
     .hero::before {
       content: '';
       position: absolute;
@@ -90,7 +87,6 @@
       z-index: 3;
     }
 
-    /* Copas.png — textura atmosférica de cócteles */
     .hero-tex {
       position: absolute;
       inset: 0;
@@ -100,7 +96,6 @@
       pointer-events: none;
     }
 
-    /* Viñeta radial para oscurecer los bordes */
     .hero-vignette {
       position: absolute;
       inset: 0;
@@ -125,11 +120,11 @@
       z-index: 2;
       font-family: var(--serif);
       font-style: italic;
-      font-size: clamp(.92rem, 4.4vw, 1.06rem);
+      font-size: clamp(.85rem, 4.4vw, 1.06rem);
       color: rgba(232,228,187,.55);
       opacity: 0;
       animation: fadeDown .55s ease .15s forwards;
-      margin-bottom: 14px;            /* Modificado para que el logo no tape el texto */
+      margin-bottom: clamp(6px, 2svh, 14px); 
     }
 
     /* ╔══════════════════════════════════════════════╗
@@ -141,7 +136,8 @@
       flex: 0 0 auto;
       display: flex;
       justify-content: center;
-      margin-top: clamp(-40px, -8dvh, -54px);   /* se solapa sobre el hero */
+      /* Corrección matemática: el negativo mayor siempre va primero en clamp */
+      margin-top: clamp(-54px, -8svh, -35px); 
       opacity: 0;
       animation: popUp .55s cubic-bezier(.22,1,.36,1) .22s forwards;
     }
@@ -152,17 +148,16 @@
       justify-content: center;
       background: var(--cream);
       border-radius: 22px;
-      padding: clamp(12px, 2.4dvh, 18px) clamp(26px, 7vw, 40px);
+      padding: clamp(8px, 2svh, 18px) clamp(20px, 6vw, 40px);
       box-shadow:
         0 16px 46px rgba(14,58,44,.40),
         0 4px 12px rgba(14,58,44,.22),
         inset 0 0 0 1px rgba(201,162,74,.28);
     }
 
-    /* PNG encuadrado a la perfección con object-fit:contain */
     .logo-badge img {
       display: block;
-      height: clamp(76px, 12.5dvh, 104px);
+      height: clamp(55px, 10svh, 104px);
       width: auto;
       max-width: 100%;
       object-fit: contain;
@@ -173,18 +168,17 @@
        ╚══════════════════════════════════════════════╝ */
     .card {
       flex: 1 1 auto;
-      min-height: 0;                 /* permite compresión sin scroll */
+      min-height: 0;                 
       background: var(--cream);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: clamp(14px, 3dvh, 26px) 22px clamp(16px, 3dvh, 26px);
+      padding: clamp(10px, 2.5svh, 26px) 22px;
       margin-top: -14px;
-      gap: clamp(4px, 1dvh, 16px);
+      gap: clamp(4px, 1svh, 16px);
     }
 
-    /* ── Separador ornamental de 3 estrellas ── */
     .orn {
       display: flex;
       align-items: center;
@@ -210,7 +204,6 @@
     }
     .orn-star.sm { width: 9px; height: 9px; opacity: .7; }
 
-    /* ── Encabezado de reseña ── */
     .review {
       width: 100%;
       text-align: center;
@@ -221,7 +214,7 @@
       font-size: clamp(1.25rem, 6.5vw, 2.1rem);
       line-height: 1.16;
       color: var(--txt);
-      margin-bottom: clamp(6px, 1.2dvh, 11px);
+      margin-bottom: clamp(4px, 1svh, 11px);
       opacity: 0;
       animation: fadeUp .6s ease .52s forwards;
     }
@@ -231,8 +224,8 @@
       color: var(--green-mid);
     }
     .review-sub {
-      font-size: clamp(.78rem, 3.5vw, .85rem);
-      line-height: 1.55;
+      font-size: clamp(.75rem, 3vw, .85rem);
+      line-height: 1.4;
       color: var(--txt-soft);
       max-width: 300px;
       margin: 0 auto;
@@ -240,7 +233,6 @@
       animation: fadeUp .6s ease .6s forwards;
     }
 
-    /* ── 5 estrellas de calificación ── */
     .stars {
       display: flex;
       gap: clamp(6px, 2.4vw, 10px);
@@ -250,15 +242,14 @@
     }
     .star-a {
       display: block;
-      width: clamp(28px, 9vw, 46px);
-      height: clamp(38px, 11vw, 46px);
+      width: clamp(32px, 9vw, 46px);
+      height: clamp(32px, 9vw, 46px);
       -webkit-tap-highlight-color: transparent;
       filter: drop-shadow(0 3px 5px rgba(201,162,74,.38));
       transition: transform .12s ease;
     }
     .star-a:active { transform: scale(.82); }
 
-    /* ── CTA de Google ── */
     .google-wrap {
       width: 100%;
       opacity: 0;
@@ -267,11 +258,11 @@
     .btn-google {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: clamp(10px, 2vw, 14px);
       width: 100%;
       background: var(--white);
       border-radius: 15px;
-      padding: clamp(6px, 1.2dvh, 15px) 15px;
+      padding: clamp(8px, 1.5svh, 15px) 15px;
       text-decoration: none;
       box-shadow:
         0 2px 10px rgba(0,0,0,.09),
@@ -282,7 +273,7 @@
     }
     .btn-google:hover  { box-shadow: 0 5px 20px rgba(0,0,0,.13); }
     .btn-google:active { transform: scale(.975); }
-    .btn-google-logo { height: 21px; width: auto; flex-shrink: 0; }
+    .btn-google-logo { height: clamp(18px, 3svh, 21px); width: auto; flex-shrink: 0; }
     .btn-google-sep  { width: 1px; height: 34px; background: rgba(0,0,0,.09); flex-shrink: 0; }
     .btn-google-copy { display: flex; flex-direction: column; gap: 1px; }
     .btn-google-lbl  { font-size: .67rem; color: rgba(0,0,0,.42); letter-spacing: .03em; }
@@ -290,17 +281,16 @@
     .btn-google-arr  { margin-left: auto; font-size: 1.3rem; line-height: 1; color: rgba(0,0,0,.3); }
     .cta-note {
       text-align: center;
-      font-size: clamp(.68rem, 3vw, .72rem);
+      font-size: clamp(.65rem, 2.5vw, .72rem);
       color: var(--txt-soft);
-      margin-top: clamp(6px, 1.1dvh, 9px);
+      margin-top: clamp(6px, 1svh, 9px);
     }
 
-    /* ── Bloque "Descubre más" + botones con PNG ── */
     .sec {
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: clamp(8px, 1.4dvh, 12px);
+      gap: clamp(6px, 1svh, 12px);
       opacity: 0;
       animation: fadeUp .55s ease .96s forwards;
     }
@@ -316,14 +306,14 @@
     .pill {
       display: flex;
       align-items: center;
-      justify-content: center;        /* icono + texto centrados */
+      justify-content: center;
       gap: 10px;
       background: var(--green);
       color: var(--cream);
       border-radius: 60px;
-      padding: clamp(11px, 1.8dvh, 14px) 22px;
+      padding: clamp(8px, 1.5svh, 14px) 22px;
       text-decoration: none;
-      font-size: clamp(.9rem, 4vw, .96rem);
+      font-size: clamp(.85rem, 4vw, .96rem);
       font-weight: 500;
       letter-spacing: .01em;
       box-shadow: 0 5px 0 rgba(0,0,0,.26);
@@ -332,7 +322,6 @@
     }
     .pill:active { box-shadow: 0 2px 0 rgba(0,0,0,.26); transform: translateY(3px); }
 
-    /* PNG dentro del botón — chip claro para máximo contraste */
     .pill-ico {
       width: 30px; height: 30px;
       flex-shrink: 0;
@@ -356,7 +345,8 @@
       flex: 0 0 auto;
       background: var(--green);
       border-top: 1px solid rgba(201,162,74,.22);
-      padding: clamp(10px, 1.6dvh, 14px) 20px calc(clamp(10px, 1.6dvh, 14px) + env(safe-area-inset-bottom,0px));
+      /* padding ajustado para garantizar visibilidad */
+      padding: clamp(8px, 1.5svh, 14px) 20px calc(clamp(8px, 1.5svh, 14px) + env(safe-area-inset-bottom,0px));
     }
     .footer a {
       display: flex;
@@ -365,7 +355,7 @@
       gap: 8px;
       color: var(--cream);
       text-decoration: none;
-      font-size: clamp(.84rem, 3.6vw, .9rem);
+      font-size: clamp(.80rem, 3.5vw, .9rem);
       -webkit-tap-highlight-color: transparent;
     }
     .footer a:active { opacity: .7; }
