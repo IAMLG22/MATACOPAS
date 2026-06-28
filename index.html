@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0e3a2c">
+  <title>MataCopas · Coffee &amp; Drinks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ╔══════════════════════════════════════════════╗
+       ║  DESIGN TOKENS                               ║
+       ╚══════════════════════════════════════════════╝ */
+    :root {
+      --green:      #0e3a2c;
+      --green-mid:  #1a5040;
+      --cream:      #e8e4bb;
+      --cream-dk:   #ccc98e;
+      --gold:       #c9a24a;
+      --gold-lt:    #e2c06e;
+      --gold-dk:    #8a6520;
+      --white:      #ffffff;
+      --txt:        #0e3a2c;
+      --txt-soft:   rgba(14,58,44,.52);
+
+      --serif: 'Higuen Elegant Serif','Cormorant Garamond',Georgia,'Times New Roman',serif;
+      --sans:  system-ui,-apple-system,'Segoe UI',Helvetica,sans-serif;
+    }
+
+    /* ╔══════════════════════════════════════════════╗
+       ║  RESET — TODO EN UNO · CERO SCROLL           ║
+       ╚══════════════════════════════════════════════╝ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;               /* sin scroll vertical en móvil */
+    }
+
+    body {
+      background: var(--green);
+      font-family: var(--sans);
+      display: flex;
+      justify-content: center;
+      overscroll-behavior: none;
+    }
+
+    /* ── Contenedor maestro: reparte el alto con flexbox ── */
+    .page {
+      width: 100%;
+      max-width: 460px;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;  /* empuja header arriba y footer abajo */
+      overflow: hidden;
+    }
+
+    /* ╔══════════════════════════════════════════════╗
+       ║  HERO BANNER (verde · ilustraciones)         ║
+       ╚══════════════════════════════════════════════╝ */
+    .hero {
+      position: relative;
+      flex: 0 0 auto;
+      min-height: clamp(118px, 21dvh, 168px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 14px 22px 30px;
+      text-align: center;
+    }
+
+    /* Filete dorado superior */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%, var(--gold-dk) 15%, var(--gold-lt) 50%, var(--gold-dk) 85%, transparent 100%);
+      z-index: 3;
+    }
+
+    /* Copas.png — textura atmosférica de cócteles */
+    .hero-tex {
+      position: absolute;
+      inset: 0;
+      background: url('Copas.png') center top / cover no-repeat;
+      opacity: .26;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    /* Viñeta radial para oscurecer los bordes */
+    .hero-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 92% 100% at 50% 0%, transparent 28%, rgba(14,58,44,.7) 100%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      position: relative;
+      z-index: 2;
+      font-size: clamp(.56rem, 2.9vw, .66rem);
+      font-weight: 500;
+      letter-spacing: .34em;
+      text-transform: uppercase;
+      color: var(--gold-lt);
+      opacity: 0;
+      animation: fadeDown .55s ease .05s forwards;
+    }
+
+    .hero-tagline {
+      position: relative;
+      z-index: 2;
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: clamp(.92rem, 4.4vw, 1.06rem);
+      color: rgba(232,228,187,.55);
+      opacity: 0;
+      animation: fadeDown .55s ease .15s forwards;
+      margin-bottom: 14px;            /* Modificado para que el logo no tape el texto */
+    }
+
+    /* ╔══════════════════════════════════════════════╗
+       ║  LOGO MATACOPAS · encuadre limpio            ║
+       ╚══════════════════════════════════════════════╝ */
+    .logo-float {
+      position: relative;
+      z-index: 30;
+      flex: 0 0 auto;
+      display: flex;
+      justify-content: center;
+      margin-top: clamp(-66px, -10dvh, -54px);   /* se solapa sobre el hero */
+      opacity: 0;
+      animation: popUp .55s cubic-bezier(.22,1,.36,1) .22s forwards;
+    }
+
+    .logo-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--cream);
+      border-radius: 22px;
+      padding: clamp(12px, 2.4dvh, 18px) clamp(26px, 7vw, 40px);
+      box-shadow:
+        0 16px 46px rgba(14,58,44,.40),
+        0 4px 12px rgba(14,58,44,.22),
+        inset 0 0 0 1px rgba(201,162,74,.28);
+    }
+
+    /* PNG encuadrado a la perfección con object-fit:contain */
+    .logo-badge img {
+      display: block;
+      height: clamp(76px, 12.5dvh, 104px);
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
+    }
+
+    /* ╔══════════════════════════════════════════════╗
+       ║  TARJETA CENTRAL (crema)                     ║
+       ╚══════════════════════════════════════════════╝ */
+    .card {
+      flex: 1 1 auto;
+      min-height: 0;                 /* permite compresión sin scroll */
+      background: var(--cream);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: clamp(14px, 3dvh, 26px) 22px clamp(16px, 3dvh, 26px);
+      margin-top: -14px;
+      gap: clamp(8px, 1.6dvh, 16px);
+    }
+
+    /* ── Separador ornamental de 3 estrellas ── */
+    .orn {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      opacity: 0;
+      animation: fadeIn .5s ease .45s forwards;
+    }
+    .orn-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dk));
+    }
+    .orn-line.r { background: linear-gradient(90deg, var(--gold-dk), transparent); }
+    .orn-mid {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 12px;
+    }
+    .orn-star {
+      width: 13px; height: 13px;
+      fill: var(--gold);
+    }
+    .orn-star.sm { width: 9px; height: 9px; opacity: .7; }
+
+    /* ── Encabezado de reseña ── */
+    .review {
+      width: 100%;
+      text-align: center;
+    }
+    .review-h {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(1.6rem, 7.6vw, 2.1rem);
+      line-height: 1.16;
+      color: var(--txt);
+      margin-bottom: clamp(6px, 1.2dvh, 11px);
+      opacity: 0;
+      animation: fadeUp .6s ease .52s forwards;
+    }
+    .review-h em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--green-mid);
+    }
+    .review-sub {
+      font-size: clamp(.78rem, 3.5vw, .85rem);
+      line-height: 1.55;
+      color: var(--txt-soft);
+      max-width: 300px;
+      margin: 0 auto;
+      opacity: 0;
+      animation: fadeUp .6s ease .6s forwards;
+    }
+
+    /* ── 5 estrellas de calificación ── */
+    .stars {
+      display: flex;
+      gap: clamp(6px, 2.4vw, 10px);
+      justify-content: center;
+      opacity: 0;
+      animation: fadeUp .55s ease .68s forwards;
+    }
+    .star-a {
+      display: block;
+      width: clamp(38px, 11vw, 46px);
+      height: clamp(38px, 11vw, 46px);
+      -webkit-tap-highlight-color: transparent;
+      filter: drop-shadow(0 3px 5px rgba(201,162,74,.38));
+      transition: transform .12s ease;
+    }
+    .star-a:active { transform: scale(.82); }
+
+    /* ── CTA de Google ── */
+    .google-wrap {
+      width: 100%;
+      opacity: 0;
+      animation: fadeUp .55s ease .82s forwards;
+    }
+    .btn-google {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      background: var(--white);
+      border-radius: 15px;
+      padding: clamp(11px, 1.9dvh, 15px) 18px;
+      text-decoration: none;
+      box-shadow:
+        0 2px 10px rgba(0,0,0,.09),
+        0 1px 3px rgba(0,0,0,.06),
+        inset 0 0 0 1.5px rgba(0,0,0,.07);
+      transition: box-shadow .15s ease, transform .1s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-google:hover  { box-shadow: 0 5px 20px rgba(0,0,0,.13); }
+    .btn-google:active { transform: scale(.975); }
+    .btn-google-logo { height: 21px; width: auto; flex-shrink: 0; }
+    .btn-google-sep  { width: 1px; height: 34px; background: rgba(0,0,0,.09); flex-shrink: 0; }
+    .btn-google-copy { display: flex; flex-direction: column; gap: 1px; }
+    .btn-google-lbl  { font-size: .67rem; color: rgba(0,0,0,.42); letter-spacing: .03em; }
+    .btn-google-act  { font-size: .97rem; font-weight: 700; color: #111; }
+    .btn-google-arr  { margin-left: auto; font-size: 1.3rem; line-height: 1; color: rgba(0,0,0,.3); }
+    .cta-note {
+      text-align: center;
+      font-size: clamp(.68rem, 3vw, .72rem);
+      color: var(--txt-soft);
+      margin-top: clamp(6px, 1.1dvh, 9px);
+    }
+
+    /* ── Bloque "Descubre más" + botones con PNG ── */
+    .sec {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(8px, 1.4dvh, 12px);
+      opacity: 0;
+      animation: fadeUp .55s ease .96s forwards;
+    }
+    .sec-label {
+      font-size: .58rem;
+      font-weight: 600;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--txt-soft);
+      text-align: center;
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;        /* icono + texto centrados */
+      gap: 10px;
+      background: var(--green);
+      color: var(--cream);
+      border-radius: 60px;
+      padding: clamp(11px, 1.8dvh, 14px) 22px;
+      text-decoration: none;
+      font-size: clamp(.9rem, 4vw, .96rem);
+      font-weight: 500;
+      letter-spacing: .01em;
+      box-shadow: 0 5px 0 rgba(0,0,0,.26);
+      transition: box-shadow .08s ease, transform .08s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pill:active { box-shadow: 0 2px 0 rgba(0,0,0,.26); transform: translateY(3px); }
+
+    /* PNG dentro del botón — chip claro para máximo contraste */
+    .pill-ico {
+      width: 30px; height: 30px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--cream);
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px rgba(201,162,74,.35);
+    }
+    .pill-ico img {
+      width: 19px; height: 19px;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* ╔══════════════════════════════════════════════╗
+       ║  PIE DE PÁGINA · Instagram                   ║
+       ╚══════════════════════════════════════════════╝ */
+    .footer {
+      flex: 0 0 auto;
+      background: var(--green);
+      border-top: 1px solid rgba(201,162,74,.22);
+      padding: clamp(10px, 1.6dvh, 14px) 20px calc(clamp(10px, 1.6dvh, 14px) + env(safe-area-inset-bottom,0px));
+    }
+    .footer a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--cream);
+      text-decoration: none;
+      font-size: clamp(.84rem, 3.6vw, .9rem);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .footer a:active { opacity: .7; }
+
+    /* ╔══════════════════════════════════════════════╗
+       ║  KEYFRAMES                                   ║
+       ╚══════════════════════════════════════════════╝ */
+    @keyframes fadeIn   { to { opacity: 1; } }
+    @keyframes fadeDown { from { opacity:0; transform:translateY(-9px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeUp   { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes popUp    { from { opacity:0; transform:scale(.86); } to { opacity:1; transform:scale(1); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; opacity: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ═══════ HERO ═══════════════════════════════ -->
+  <header class="hero">
+    <div class="hero-tex"      aria-hidden="true"></div>
+    <div class="hero-vignette" aria-hidden="true"></div>
+    <span class="hero-eyebrow">Coffee &amp; Drinks · Teatinos · Málaga</span>
+    <span class="hero-tagline">Una experiencia que merece ser compartida</span>
+  </header>
+
+  <!-- ═══════ LOGO MATACOPAS ═════════════════════ -->
+  <div class="logo-float">
+    <div class="logo-badge">
+      <img src="logo-matacopas.png" alt="MataCopas · Coffee &amp; Drinks">
+    </div>
+  </div>
+
+  <!-- ═══════ TARJETA CENTRAL ════════════════════ -->
+  <main class="card">
+
+    <!-- Separador ornamental de 3 estrellas -->
+    <div class="orn">
+      <div class="orn-line"></div>
+      <div class="orn-mid">
+        <svg class="orn-star sm" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1 L8.4 5.2 L12.9 5.2 L9.4 7.8 L10.8 12 L7 9.5 L3.2 12 L4.6 7.8 L1.1 5.2 L5.6 5.2 Z"/></svg>
+        <svg class="orn-star"    viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1 L8.4 5.2 L12.9 5.2 L9.4 7.8 L10.8 12 L7 9.5 L3.2 12 L4.6 7.8 L1.1 5.2 L5.6 5.2 Z"/></svg>
+        <svg class="orn-star sm" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1 L8.4 5.2 L12.9 5.2 L9.4 7.8 L10.8 12 L7 9.5 L3.2 12 L4.6 7.8 L1.1 5.2 L5.6 5.2 Z"/></svg>
+      </div>
+      <div class="orn-line r"></div>
+    </div>
+
+    <!-- Encabezado -->
+    <section class="review">
+      <h1 class="review-h">¿Cómo fue tu<br><em>experiencia</em> en MataCopas?</h1>
+      <p class="review-sub">Tu valoración nos ayuda a seguir mejorando<br>y a que más personas nos descubran.</p>
+    </section>
+
+    <!-- ★★★★★ — cada estrella enlaza al formulario de reseña de Google -->
+    <div class="stars" role="group" aria-label="Pulsa una estrella para valorarnos en Google">
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <defs>
+          <linearGradient id="gGold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#f2d888"/>
+            <stop offset="42%"  stop-color="#c9a24a"/>
+            <stop offset="100%" stop-color="#7a5218"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <a href="https://search.google.com/local/writereview?placeid=ChIJ3ZVWC0H3cg0RTt_jVHd6fLE" class="star-a" aria-label="1 estrella">
+        <svg viewBox="0 0 44 44"><path d="M22 3 L26.4 15.4 L39.8 15.4 L29.2 23.2 L33.4 36 L22 28.4 L10.6 36 L14.8 23.2 L4.2 15.4 L17.6 15.4 Z" fill="url(#gGold)"/></svg>
+      </a>
+      <a href="https://search.google.com/local/writereview?placeid=ChIJ3ZVWC0H3cg0RTt_jVHd6fLE" class="star-a" aria-label="2 estrellas">
+        <svg viewBox="0 0 44 44"><path d="M22 3 L26.4 15.4 L39.8 15.4 L29.2 23.2 L33.4 36 L22 28.4 L10.6 36 L14.8 23.2 L4.2 15.4 L17.6 15.4 Z" fill="url(#gGold)"/></svg>
+      </a>
+      <a href="https://search.google.com/local/writereview?placeid=ChIJ3ZVWC0H3cg0RTt_jVHd6fLE" class="star-a" aria-label="3 estrellas">
+        <svg viewBox="0 0 44 44"><path d="M22 3 L26.4 15.4 L39.8 15.4 L29.2 23.2 L33.4 36 L22 28.4 L10.6 36 L14.8 23.2 L4.2 15.4 L17.6 15.4 Z" fill="url(#gGold)"/></svg>
+      </a>
+      <a href="https://search.google.com/local/writereview?placeid=ChIJ3ZVWC0H3cg0RTt_jVHd6fLE" class="star-a" aria-label="4 estrellas">
+        <svg viewBox="0 0 44 44"><path d="M22 3 L26.4 15.4 L39.8 15.4 L29.2 23.2 L33.4 36 L22 28.4 L10.6 36 L14.8 23.2 L4.2 15.4 L17.6 15.4 Z" fill="url(#gGold)"/></svg>
+      </a>
+      <a href="https://search.google.com/local/writereview?placeid=ChIJ3ZVWC0H3cg0RTt_jVHd6fLE" class="star-a" aria-label="5 estrellas">
+        <svg viewBox="0 0 44 44"><path d="M22 3 L26.4 15.4 L39.8 15.4 L29.2 23.2 L33.4 36 L22 28.4 L10.6 36 L14.8 23.2 L4.2 15.4 L17.6 15.4 Z" fill="url(#gGold)"/></svg>
+      </a>
+    </div>
+
+    <!-- Tarjeta CTA de Google -->
+    <div class="google-wrap">
+      <a href="https://search.google.com/local/writereview?placeid=ChIJ3ZVWC0H3cg0RTt_jVHd6fLE" class="btn-google">
+        <img src="Google_2015_logo.svg.png" alt="Google" class="btn-google-logo">
+        <div class="btn-google-sep" aria-hidden="true"></div>
+        <div class="btn-google-copy">
+          <span class="btn-google-lbl">Valorar en Google</span>
+          <span class="btn-google-act">Dejar mi reseña</span>
+        </div>
+        <span class="btn-google-arr" aria-hidden="true">›</span>
+      </a>
+      <p class="cta-note">Solo toma 30 segundos &nbsp;·&nbsp; ¡Gracias de corazón!</p>
+    </div>
+
+    <!-- Descubre más -->
+    <div class="sec">
+      <p class="sec-label">Descubre más</p>
+
+      <a href="https://www.matacopas.com/" class="pill">
+        <span class="pill-ico"><img src="icon-cocktail.png" alt="" aria-hidden="true"></span>
+        Nuestra carta
+      </a>
+
+      <!-- Modificado enlace para redirigir a Galeón usando su Place ID -->
+      <a href="https://www.google.com/maps/search/?api=1&amp;query=Gale%C3%B3n&amp;query_place_id=ChIJnZZDrsr3cg0RXZLMPOptVbE" class="pill">
+        <span class="pill-ico"><img src="icon-pin.png" alt="" aria-hidden="true"></span>
+        También estamos…
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ═══════ PIE DE PÁGINA ══════════════════════ -->
+  <footer class="footer">
+    <a href="https://www.instagram.com/matacopas.teatinos/">
+      ¡Síguenos en
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Instagram">
+        <rect x="2" y="2" width="20" height="20" rx="5.8" stroke="#c9a24a" stroke-width="2"/>
+        <circle cx="12" cy="12" r="4.8" stroke="#c9a24a" stroke-width="2"/>
+        <circle cx="17.5" cy="6.5" r="1.25" fill="#c9a24a"/>
+      </svg>
+      !
+    </a>
+  </footer>
+
+</div><!-- /.page -->
+
+</body>
+</html>
